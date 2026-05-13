@@ -14,6 +14,7 @@ PLATFORM_DIR="$(dirname "$CORE_DIR")"
 
 ENGINE_SCRIPTS=("cve-check.py" "secret-scan.py" "audit-log.py" "emit-violation.py")
 MCP_SCRIPT="server.py"
+ANDIE_SRC="${HOME}/.claude/skills/andie/SKILL.md"
 
 echo ""
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
@@ -63,6 +64,26 @@ echo ""
 # MCP server
 bundle_mcp "raven (claude)"  "$PLATFORM_DIR/SHAY-ROLLS/CLAUDE/RAVEN/mcp"
 bundle_mcp "raven (codex)"   "$PLATFORM_DIR/SHAY-ROLLS/CLAUDE/RAVEN/codex/mcp"
+
+echo ""
+
+# Andie skill — sync from canonical ~/.claude/skills/andie/SKILL.md
+echo "▶ Andie skill sync"
+ANDIE_TARGETS=(
+  "$PLATFORM_DIR/SHAY-ROLLS/CLAUDE/RAVEN/core/skills/andie/SKILL.md"
+  "$PLATFORM_DIR/SHAY-ROLLS/CLAUDE/RAVEN/guard/guard/skills/andie/SKILL.md"
+)
+if [[ ! -f "$ANDIE_SRC" ]]; then
+  echo "  ⚠️  Andie SKILL.md not found at $ANDIE_SRC — skipping"
+else
+  for DEST in "${ANDIE_TARGETS[@]}"; do
+    if [[ "$DRY_RUN" == "false" ]]; then
+      mkdir -p "$(dirname "$DEST")"
+      cp "$ANDIE_SRC" "$DEST"
+    fi
+    echo "  ✅ $(dirname "$DEST" | sed "s|$PLATFORM_DIR/||")"
+  done
+fi
 
 echo ""
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
