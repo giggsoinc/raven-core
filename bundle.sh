@@ -15,6 +15,7 @@ PLATFORM_DIR="$(dirname "$CORE_DIR")"
 ENGINE_SCRIPTS=("cve-check.py" "secret-scan.py" "audit-log.py" "emit-violation.py")
 MCP_SCRIPT="server.py"
 ANDIE_SRC="${HOME}/.claude/skills/andie/SKILL.md"
+TOOLS_SRC="${HOME}/.claude/skills/tools-landscape"
 
 echo ""
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
@@ -82,6 +83,25 @@ else
       cp "$ANDIE_SRC" "$DEST"
     fi
     echo "  ✅ $(dirname "$DEST" | sed "s|$PLATFORM_DIR/||")"
+  done
+fi
+
+# Tools landscape skill — sync full directory from ~/.claude/skills/tools-landscape/
+echo "▶ Tools landscape skill sync"
+TOOLS_TARGETS=(
+  "$PLATFORM_DIR/SHAY-ROLLS/CLAUDE/RAVEN/core/skills/tools-landscape"
+  "$PLATFORM_DIR/SHAY-ROLLS/CLAUDE/RAVEN/guard/guard/skills/tools-landscape"
+)
+if [[ ! -d "$TOOLS_SRC" ]]; then
+  echo "  ⚠️  tools-landscape not found at $TOOLS_SRC — skipping"
+else
+  for DEST in "${TOOLS_TARGETS[@]}"; do
+    if [[ "$DRY_RUN" == "false" ]]; then
+      mkdir -p "$DEST"
+      cp "$TOOLS_SRC/SKILL.md" "$DEST/SKILL.md"
+      cp "$TOOLS_SRC/registry.json" "$DEST/registry.json"
+    fi
+    echo "  ✅ $(echo "$DEST" | sed "s|$PLATFORM_DIR/||") (SKILL.md + registry.json)"
   done
 fi
 
