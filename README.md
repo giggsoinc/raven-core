@@ -1,7 +1,13 @@
+<p align="center">
+  <img src="./assets/raven-banner.png" alt="Raven — Guardrails before you ship." width="800"/>
+</p>
+
 # Raven Core
 
 > The shared discipline engine powering the Raven platform.
 > Built by [Giggso Inc](https://github.com/giggsoinc). MIT License.
+
+*Guardrails before you ship.*
 
 ---
 
