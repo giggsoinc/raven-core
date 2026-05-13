@@ -1,8 +1,10 @@
 #!/usr/bin/env python3
 """
-Raven Claude — MCP Server
-Exposes Raven as a Claude Code plugin via Model Context Protocol.
-Install: claude mcp add raven -- python3 /path/to/server.py
+Raven — MCP Server (platform-agnostic)
+Exposes Raven as an MCP plugin for Claude Code, OpenAI Codex, or any MCP-compatible agent.
+
+Claude Code:  claude mcp add raven -- python3 ~/.raven/mcp/server.py
+Codex:        Settings → MCP Servers → python3 ~/.raven-codex/mcp/server.py
 
 Tools exposed:
   raven_status        — check manifest, version, mode
@@ -28,11 +30,17 @@ def read():
     return json.loads(line.strip())
 
 def find_scripts_dir() -> Path:
-    """Find .claude/scripts in current working directory."""
+    """Find Raven scripts — checks .raven/scripts, then .claude/scripts for backwards compat."""
     cwd = Path(os.getcwd())
-    scripts = cwd / ".claude" / "scripts"
-    if scripts.exists():
-        return scripts
+    for candidate in [
+        cwd / ".raven" / "scripts",
+        cwd / ".claude" / "scripts",
+        Path(os.path.dirname(__file__)),           # same dir as this server.py
+        Path.home() / ".raven-codex" / "scripts",
+        Path.home() / ".raven" / "scripts",
+    ]:
+        if candidate.exists() and (candidate / "cve-check.py").exists():
+            return candidate
     return None
 
 def run_script(script: str, args: list[str] = []) -> dict:
@@ -140,16 +148,16 @@ def handle(method: str, params: dict) -> dict:
         if name == "raven_debug":
             checks = []
             cwd = Path(os.getcwd())
+            scripts = find_scripts_dir()
             for f, label in [
-                (".raven/manifest.json",       "manifest.json"),
-                ("CLAUDE.md",                        "CLAUDE.md"),
-                (".gitignore",                       ".gitignore"),
-                (".claude/agents/manifest-checker.md","manifest-checker agent"),
-                (".claude/scripts/cve-check.py",     "cve-check.py"),
-                (".git/hooks/pre-commit",             "pre-commit hook"),
+                (".raven/manifest.json",   "manifest.json"),
+                (".gitignore",             ".gitignore"),
+                (".git/hooks/pre-commit",  "pre-commit hook"),
             ]:
                 icon = "✅" if (cwd/f).exists() else "❌"
                 checks.append(f"{icon} {label}")
+            checks.append(f"{'✅' if scripts else '❌'} raven scripts ({scripts or 'not found'})")
+            checks.append(f"{'✅' if (cwd/'CLAUDE.md').exists() else '⚠️ '} CLAUDE.md (Claude Code only)")
             return {"content": [{"type":"text","text": "\n".join(checks)}]}
 
         if name == "raven_violation":

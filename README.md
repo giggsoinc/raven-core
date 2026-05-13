@@ -38,12 +38,32 @@ It is not installed directly — it is used by:
 
 ---
 
+## Do Not Install Directly
+
+Users install a platform repo — not this one:
+
+```bash
+# Claude Code users
+curl -fsSL https://raw.githubusercontent.com/giggsoinc/raven/main/install.sh | bash
+
+# Codex users
+curl -fsSL https://raw.githubusercontent.com/giggsoinc/raven-codex/main/install.sh | bash
+```
+
+This repo is the engine. The platform repos bundle it at release time.
+
+---
+
 ## Contributing
 
-Fix the engine here — it fixes every platform at once.
+Fix the engine here — it propagates to every platform at once.
 
 ```bash
 git clone https://github.com/giggsoinc/raven-core
+# make your change
+bash bundle.sh --dry-run    # preview what gets copied where
+bash bundle.sh              # copy scripts into platform repos
+# commit each platform repo, then open your PR here
 ```
 
 ---
