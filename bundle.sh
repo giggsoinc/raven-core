@@ -53,16 +53,16 @@ bundle_mcp() {
   echo "  ✅ $MCP_SCRIPT"
 }
 
-# Engine scripts
-bundle_scripts "raven"            "$PLATFORM_DIR/SHAY-ROLLS/CLAUDE/RAVEN/.claude/scripts"
-bundle_scripts "raven-codex"      "$PLATFORM_DIR/raven-codex/scripts"
+# Engine scripts — monorepo targets
+bundle_scripts "raven (claude)"   "$PLATFORM_DIR/SHAY-ROLLS/CLAUDE/RAVEN/.claude/scripts"
+bundle_scripts "raven (codex)"    "$PLATFORM_DIR/SHAY-ROLLS/CLAUDE/RAVEN/codex/scripts"
 bundle_scripts "raven-action"     "$PLATFORM_DIR/raven-action/scripts"
 
 echo ""
 
 # MCP server
-bundle_mcp "raven"       "$PLATFORM_DIR/SHAY-ROLLS/CLAUDE/RAVEN/mcp"
-bundle_mcp "raven-codex" "$PLATFORM_DIR/raven-codex/mcp"
+bundle_mcp "raven (claude)"  "$PLATFORM_DIR/SHAY-ROLLS/CLAUDE/RAVEN/mcp"
+bundle_mcp "raven (codex)"   "$PLATFORM_DIR/SHAY-ROLLS/CLAUDE/RAVEN/codex/mcp"
 
 echo ""
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
