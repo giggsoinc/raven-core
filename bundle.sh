@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# bundle.sh — copy engine scripts from raven-core into each platform repo
+# bundle.sh — copy engine scripts AND plugin content from raven-core into platform repos
 # Run this after any engine change before releasing a new version
 #
 # Usage: bash bundle.sh [--dry-run]
@@ -114,8 +114,38 @@ else
   done
 fi
 
+# Plugin content — sync skills/agents/commands from SHAY-ROLLS into raven-core (plugin package)
+echo "▶ Plugin content sync → raven-core"
+PLUGIN_SRC="$PLATFORM_DIR/SHAY-ROLLS/CLAUDE/RAVEN/core"
+PLUGIN_DST="$CORE_DIR"
+
+if [[ -d "$PLUGIN_SRC/skills" ]]; then
+  for skill_dir in "$PLUGIN_SRC/skills"/*/; do
+    skill_name="$(basename "$skill_dir")"
+    if [[ "$DRY_RUN" == "false" ]]; then
+      mkdir -p "$PLUGIN_DST/skills/$skill_name"
+      [[ -f "$skill_dir/SKILL.md" ]] && cp "$skill_dir/SKILL.md" "$PLUGIN_DST/skills/$skill_name/SKILL.md"
+      if [[ -d "$skill_dir/rules" ]]; then
+        mkdir -p "$PLUGIN_DST/skills/$skill_name/rules"
+        cp "$skill_dir/rules/"*.md "$PLUGIN_DST/skills/$skill_name/rules/" 2>/dev/null || true
+      fi
+    fi
+    echo "  ✅ skills/$skill_name"
+  done
+fi
+
+if [[ "$DRY_RUN" == "false" ]]; then
+  mkdir -p "$PLUGIN_DST/agents"
+  cp "$PLUGIN_SRC/agents/"*.md "$PLUGIN_DST/agents/" 2>/dev/null || true
+  mkdir -p "$PLUGIN_DST/commands"
+  cp "$PLUGIN_SRC/commands/"*.md "$PLUGIN_DST/commands/" 2>/dev/null || true
+fi
+echo "  ✅ agents/ ($(ls "$PLUGIN_DST/agents/" 2>/dev/null | wc -l | tr -d ' ') files)"
+echo "  ✅ commands/ ($(ls "$PLUGIN_DST/commands/" 2>/dev/null | wc -l | tr -d ' ') files)"
+
 echo ""
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 echo "  Done. Commit each platform repo."
+echo "  Install plugin: claude plugin install giggsoinc/raven"
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 echo ""
