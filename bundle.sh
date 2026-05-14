@@ -11,6 +11,7 @@ DRY_RUN=false
 
 CORE_DIR="$(cd "$(dirname "$0")" && pwd)"
 PLATFORM_DIR="$(dirname "$CORE_DIR")"
+CURRENT_VERSION="$(cat "$CORE_DIR/VERSION" 2>/dev/null || echo "unknown")"
 
 ENGINE_SCRIPTS=("cve-check.py" "secret-scan.py" "audit-log.py" "emit-violation.py")
 MCP_SCRIPT="server.py"
@@ -20,6 +21,7 @@ TOOLS_SRC="${HOME}/.claude/skills/tools-landscape"
 echo ""
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 echo "  Raven Core — Bundle Engine Scripts"
+echo "  Version: $CURRENT_VERSION"
 [[ "$DRY_RUN" == "true" ]] && echo "  DRY RUN — no files written"
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 echo ""
@@ -41,6 +43,13 @@ bundle_scripts() {
       echo "  ❌ $SCRIPT — not found in raven-core"
     fi
   done
+  # Write version stamp to parent .raven/ directory
+  if [[ "$DRY_RUN" == "false" ]]; then
+    RAVEN_DIR="$(dirname "$DEST")/.raven"
+    mkdir -p "$RAVEN_DIR"
+    echo "$CURRENT_VERSION" > "$RAVEN_DIR/raven_version"
+    echo "  ✅ .raven/raven_version → $CURRENT_VERSION"
+  fi
 }
 
 bundle_mcp() {
