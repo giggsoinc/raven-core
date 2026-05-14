@@ -13,7 +13,7 @@ CORE_DIR="$(cd "$(dirname "$0")" && pwd)"
 PLATFORM_DIR="$(dirname "$CORE_DIR")"
 CURRENT_VERSION="$(cat "$CORE_DIR/VERSION" 2>/dev/null || echo "unknown")"
 
-ENGINE_SCRIPTS=("cve-check.py" "secret-scan.py" "audit-log.py" "emit-violation.py")
+ENGINE_SCRIPTS=("cve-check.py" "secret-scan.py" "audit-log.py" "emit-violation.py" "db-guard.py")
 MCP_SCRIPT="server.py"
 ANDIE_SRC="${HOME}/.claude/skills/andie/SKILL.md"
 TOOLS_SRC="${HOME}/.claude/skills/tools-landscape"
